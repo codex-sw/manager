@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Loading...</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f3f3f3;
+            font-family: Arial, sans-serif;
+        }
+
+        .loading {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading">
+        <h1>Loading...</h1>
+        <p>Please wait while the application is loading.</p>
+    </div>
+    <script>
+        function checkAppReady() {
+            fetch('/')
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        setTimeout(checkAppReady, 2000);
+                    }
+                })
+                .catch(() => {
+                    setTimeout(checkAppReady, 2000);
+                });
+        }
+
+        checkAppReady();
+    </script>
+</body>
+
+</html>
