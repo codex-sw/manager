@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 const axios = require('axios');
 const fs = require('fs');
 
-const repoUrl = 'https://api.github.com/repos/codex-sw/manager';
+const repoUrl = 'https://api.github.com/repos/codex-sw/manager/commits/main';
 const localVersionFile = '/home/admin/tickerapp/app/version.txt';
 const mainAppScript = '/home/admin/tickerapp/app/app.js';
 const maxRetries = 5;
@@ -10,14 +10,14 @@ let retryCount = 0;
 
 const checkForUpdates = async () => {
     try {
-        const response = await axios.get(`${repoUrl}/releases/latest`);
-        const latestVersion = response.data.tag_name;
+        const response = await axios.get(repoUrl);
+        const latestCommit = response.data.sha;
 
-        const localVersion = fs.existsSync(localVersionFile) ? fs.readFileSync(localVersionFile, 'utf8').trim() : '0.0.0';
+        const localVersion = fs.existsSync(localVersionFile) ? fs.readFileSync(localVersionFile, 'utf8').trim() : '';
 
-        if (latestVersion !== localVersion) {
-            console.log(`New version available: ${latestVersion}. Updating...`);
-            updateApplication(response.data.zipball_url, latestVersion);
+        if (latestCommit !== localVersion) {
+            console.log(`New version available: ${latestCommit}. Updating...`);
+            updateApplication(latestCommit);
         } else {
             console.log('Already on the latest version.');
             startMainApplication();
@@ -35,14 +35,13 @@ const checkForUpdates = async () => {
     }
 };
 
-const updateApplication = (zipUrl, latestVersion) => {
+const updateApplication = (latestCommit) => {
     const tempDir = '/tmp/update';
     execSync(`rm -rf ${tempDir}`);
     execSync(`mkdir -p ${tempDir}`);
-    execSync(`wget -O ${tempDir}/update.zip ${zipUrl}`);
-    execSync(`unzip ${tempDir}/update.zip -d ${tempDir}`);
-    execSync(`cp -r ${tempDir}/yourrepo-*/* /home/admin/tickerapp/app/`);
-    fs.writeFileSync(localVersionFile, latestVersion);
+    execSync(`git clone https://github.com/codex-sw/manager.git ${tempDir}`);
+    execSync(`cp -r ${tempDir}/app/* /home/admin/tickerapp/app/`);
+    fs.writeFileSync(localVersionFile, latestCommit);
     console.log('Update complete. Restarting application...');
     startMainApplication();
 };
