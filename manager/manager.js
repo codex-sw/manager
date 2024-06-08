@@ -37,18 +37,42 @@ const checkForUpdates = async () => {
 
 const updateApplication = (latestCommit) => {
     const tempDir = '/tmp/update';
-    execSync(`rm -rf ${tempDir}`);
-    execSync(`mkdir -p ${tempDir}`);
-    execSync(`git clone https://github.com/codex-sw/manager.git ${tempDir}`);
-    execSync(`cp -r ${tempDir}/app/* /home/admin/tickerapp/app/`);
-    fs.writeFileSync(localVersionFile, latestCommit);
-    console.log('Update complete. Restarting application...');
-    startMainApplication();
+    try {
+        execSync(`rm -rf ${tempDir}`);
+        execSync(`mkdir -p ${tempDir}`);
+        execSync(`git clone https://github.com/codex-sw/manager.git ${tempDir}`);
+        execSync(`sudo cp -r ${tempDir}/app/* /home/admin/tickerapp/app/`);
+        fs.writeFileSync(localVersionFile, latestCommit);
+        console.log('Update complete. Restarting application...');
+        restartServices();
+    } catch (error) {
+        console.error('Error during update:', error.message);
+        console.error('Full error output:', error.output ? error.output.toString() : 'No additional output');
+        startMainApplication();
+    }
 };
 
 const startMainApplication = () => {
-    console.log('Starting main application...');
-    execSync(`node ${mainAppScript}`, { stdio: 'inherit' });
+    try {
+        console.log('Starting main application...');
+        execSync(`sudo node ${mainAppScript}`, { stdio: 'inherit' });
+    } catch (error) {
+        console.error('Error starting main application:', error.message);
+        console.error('Full error output:', error.output ? error.output.toString() : 'No additional output');
+    }
+};
+
+const restartServices = () => {
+    console.log('Restarting services...');
+    try {
+        // Restart the Node.js app service
+        execSync('sudo systemctl restart manager.service');
+        // Restart the Chromium kiosk service
+        execSync('sudo systemctl restart xinit.service');
+    } catch (error) {
+        console.error('Error restarting services:', error.message);
+        console.error('Full error output:', error.output ? error.output.toString() : 'No additional output');
+    }
 };
 
 checkForUpdates();

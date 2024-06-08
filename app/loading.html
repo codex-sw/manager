@@ -26,7 +26,7 @@
     </div>
     <script>
         function checkAppReady() {
-            fetch('/')
+            fetch('/api/health')
                 .then(response => {
                     if (response.ok) {
                         window.location.reload();
