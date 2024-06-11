@@ -33,6 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function formatMarketCap(marketCap) {
+        if (marketCap >= 1e12) {
+            return (marketCap / 1e12).toFixed(2).toLocaleString() + 'T';
+        } else if (marketCap >= 1e9) {
+            return (marketCap / 1e9).toFixed(2).toLocaleString() + 'B';
+        } else if (marketCap >= 1e6) {
+            return (marketCap / 1e6).toFixed(2).toLocaleString() + 'M';
+        } else {
+            return marketCap.toFixed(2).toLocaleString();
+        }
+    }
+
     async function fetchCryptoInfo(cryptoName) {
         try {
             console.log('Fetching crypto info for:', cryptoName);
@@ -51,9 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.id) {
                 symbolElement.textContent = data.symbol;
                 companyNameElement.textContent = data.name;
-                priceElement.textContent = data.price.toFixed(2);
+                priceElement.textContent = "$" + Number(data.price.toFixed(2)).toLocaleString();
                 percentageChangeElement.textContent = `${data.percentageChange.toFixed(2)}%`;
-                marketCapElement.textContent = (data.marketCap / 1e9).toFixed(2) + 'B';
+                marketCapElement.textContent = formatMarketCap(data.marketCap);
 
                 // Update the chart with the received data
                 const now = new Date();
@@ -88,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen for Server-Sent Events
     const eventSource = new EventSource('/api/crypto-updates');
-    eventSource.onmessage = function(event) {
+    eventSource.onmessage = function (event) {
         const data = JSON.parse(event.data);
         console.log('Received update:', data);
 
@@ -99,9 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
         cryptoChart.update();
 
         // Update the displayed values
-        priceElement.textContent = data.price.toFixed(2);
+        priceElement.textContent = "$" + Number(data.price.toFixed(2)).toLocaleString();
         percentageChangeElement.textContent = `${data.percentageChange.toFixed(2)}%`;
-        marketCapElement.textContent = (data.marketCap / 1e9).toFixed(2) + 'B';
+        marketCapElement.textContent = formatMarketCap(data.marketCap);
     };
 
     // Optionally, refresh the data at intervals
