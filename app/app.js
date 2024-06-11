@@ -1,9 +1,17 @@
 const express = require('express');
-const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const stockRoutes = require('./stock'); // Keep this if you want to keep stock routes
+const cryptoRoutes = require('./crypto'); // Import the crypto routes
 const app = express();
 const port = 3000;
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+
+// app.use(stockRoutes); // Use the stock routes
+app.use(cryptoRoutes); // Use the crypto routes
+
 
 // Set log directory based on environment
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -71,13 +79,13 @@ if (!isDevelopment) {
 }
 
 // Middleware to serve the loading page if the app is not ready
-app.use((req, res, next) => {
-    if (!app.locals.ready) {
-        res.sendFile(path.join(__dirname, 'loading.html'));
-    } else {
-        next();
-    }
-});
+// app.use((req, res, next) => {
+//     if (!app.locals.ready) {
+//         res.sendFile(path.join(__dirname, 'public', 'loading.html'));
+//     } else {
+//         next();
+//     }
+// });
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -86,22 +94,7 @@ app.get('/api/health', (req, res) => {
 
 // Serve the main page
 app.get('/', (req, res) => {
-    if (app.locals.ready) {
-        res.sendFile(path.join(__dirname, 'index.html'));
-    } else {
-        res.sendFile(path.join(__dirname, 'loading.html'));
-    }
-});
-
-app.get('/ping', async (req, res) => {
-    try {
-        const response = await axios.get('https://www.google.com');
-        res.send('Ping to Google successful');
-        log('Ping to Google successful');
-    } catch (error) {
-        res.send('Ping to Google failed');
-        log(`Ping to Google failed: ${error}`);
-    }
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Simulate app readiness after 5 seconds (replace this with your actual readiness logic)

@@ -1,0 +1,93 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.stock-ticker {
+    width: 100%;
+    max-width: 800px;  /* Adjusted to fit within 800x480 */
+    height: 100%;
+    max-height: 480px;  /* Adjusted to fit within 800x480 */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.left-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.stock-symbol {
+    display: flex;
+    align-items: center;
+}
+
+.triangle {
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    margin-right: 10px;
+}
+
+.triangle-positive {
+    border-bottom: 20px solid black;
+}
+
+.triangle-negative {
+    border-top: 20px solid black;
+}
+
+.symbol {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.company-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px; /* Add some space between the symbol and company name */
+}
+
+.stock-info {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.market-cap,
+.percentage-change {
+    font-size: 16px;
+}
+
+.chart-placeholder {
+    flex-grow: 1;
+    margin: 20px 0;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.price {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: right;
+}

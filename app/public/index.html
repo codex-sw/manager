@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Ticker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="stock-ticker">
+        <div class="header">
+            <div class="left-section">
+                <div class="stock-symbol">
+                    <div class="triangle" id="triangleIndicator"></div>
+                    <div class="symbol" id="symbol">ETH</div>
+                </div>
+                <div class="company-name" id="company-name">Ethereum</div>
+            </div>
+            <div class="stock-info">
+                <div class="market-cap" id="market-cap">0.00B</div>
+                <div class="percentage-change" id="percentage-change">0.00%</div>
+            </div>
+        </div>
+        <div class="chart-placeholder">
+            <!-- Placeholder for chart -->
+            <canvas id="cryptoChart" width="780" height="258"></canvas>
+        </div>
+        <div class="price" id="price">0.00</div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="app.js"></script>
+</body>
+</html>
