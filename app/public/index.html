@@ -1,34 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Ticker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <div class="stock-ticker">
-        <div class="header">
-            <div class="left-section">
-                <div class="stock-symbol">
-                    <div class="triangle" id="triangleIndicator"></div>
-                    <div class="symbol" id="symbol">ETH</div>
+    <div id="main-container">
+        <div class="stock-ticker">
+            <div class="header">
+                <div class="left-section">
+                    <div class="stock-symbol">
+                        <div class="triangle" id="triangleIndicator"></div>
+                        <div class="symbol" id="symbol">ETH</div>
+                    </div>
+                    <div class="company-name" id="company-name">Ethereum</div>
                 </div>
-                <div class="company-name" id="company-name">Ethereum</div>
+                <div class="stock-info">
+                    <div class="market-cap" id="market-cap">0.00B</div>
+                    <div class="percentage-change" id="percentage-change">0.00%</div>
+                </div>
             </div>
-            <div class="stock-info">
-                <div class="market-cap" id="market-cap">0.00B</div>
-                <div class="percentage-change" id="percentage-change">0.00%</div>
+            <div class="chart-placeholder">
+                <!-- Placeholder for chart -->
+                <canvas id="cryptoChart" width="780" height="258"></canvas>
             </div>
+            <div class="price" id="price">0.00</div>
         </div>
-        <div class="chart-placeholder">
-            <!-- Placeholder for chart -->
-            <canvas id="cryptoChart" width="780" height="258"></canvas>
-        </div>
-        <div class="price" id="price">0.00</div>
     </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden">
+        <div id="overlay-content">
+            <button id="close-overlay">X</button>
+            <div id="main-menu">
+                <div class="option" id="swap-views">Swap Views</div>
+                <div class="option" id="settings">Settings</div>
+                <div class="option" id="mode">Mode</div>
+            </div>
+            <div id="views-menu" class="hidden">
+                <button id="back-to-main-menu">Back</button>
+                <div class="view-option">View 1</div>
+                <div class="navigation-dots">
+                    <!-- Navigation dots go here -->
+                </div>
+                <button id="save-view">Save</button>
+            </div>
+            <div id="settings-menu" class="hidden">
+                <button id="back-to-main-menu-settings">Back</button>
+                <label for="mode-toggle">Dark Mode:</label>
+                <input type="checkbox" id="mode-toggle">
+            </div>
+            <div id="mode-menu" class="hidden">
+                <button id="back-to-main-menu-mode">Back</button>
+                <div class="option" id="crypto">Crypto</div>
+                <div class="option" id="stocks">Stocks</div>
+                <!-- Sports option can be added later -->
+            </div>
+            <div id="crypto-menu" class="hidden">
+                <button id="back-to-mode-menu">Back</button>
+                <!-- List of crypto tickers -->
+                <div id="crypto-tickers">
+                    <!-- Example ticker -->
+                    <div class="ticker">Bitcoin <span class="check"></span></div>
+                </div>
+                <button id="select-ticker">Select</button>
+            </div>
+            <div id="stocks-menu" class="hidden">
+                <button id="back-to-mode-menu-stocks">Back</button>
+                <label for="stock-symbol">Stock Symbol:</label>
+                <input type="text" id="stock-symbol">
+                <button id="save-stock-symbol">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="app.js"></script>
 </body>
+
 </html>

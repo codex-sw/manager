@@ -118,4 +118,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Optionally, refresh the data at intervals
     // setInterval(() => fetchCryptoInfo(cryptoName), 60000); // Refresh every minute
+
+    // Overlay functionality
+    const overlay = document.getElementById("overlay");
+    const closeOverlayBtn = document.getElementById("close-overlay");
+    const mainMenu = document.getElementById("main-menu");
+    const viewsMenu = document.getElementById("views-menu");
+    const settingsMenu = document.getElementById("settings-menu");
+    const modeMenu = document.getElementById("mode-menu");
+    const cryptoMenu = document.getElementById("crypto-menu");
+    const stocksMenu = document.getElementById("stocks-menu");
+
+    // Show overlay on screen tap/click
+    document.getElementById("main-container").addEventListener("click", () => {
+        overlay.classList.remove("hidden");
+    });
+
+    // Close overlay
+    closeOverlayBtn.addEventListener("click", () => {
+        overlay.classList.add("hidden");
+    });
+
+    // Navigation
+    document.getElementById("swap-views").addEventListener("click", () => {
+        mainMenu.classList.add("hidden");
+        viewsMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("settings").addEventListener("click", () => {
+        mainMenu.classList.add("hidden");
+        settingsMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("mode").addEventListener("click", () => {
+        mainMenu.classList.add("hidden");
+        modeMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("back-to-main-menu").addEventListener("click", () => {
+        viewsMenu.classList.add("hidden");
+        mainMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("back-to-main-menu-settings").addEventListener("click", () => {
+        settingsMenu.classList.add("hidden");
+        mainMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("back-to-main-menu-mode").addEventListener("click", () => {
+        modeMenu.classList.add("hidden");
+        mainMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("crypto").addEventListener("click", () => {
+        modeMenu.classList.add("hidden");
+        cryptoMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("stocks").addEventListener("click", () => {
+        modeMenu.classList.add("hidden");
+        stocksMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("back-to-mode-menu").addEventListener("click", () => {
+        cryptoMenu.classList.add("hidden");
+        modeMenu.classList.remove("hidden");
+    });
+
+    document.getElementById("back-to-mode-menu-stocks").addEventListener("click", () => {
+        stocksMenu.classList.add("hidden");
+        modeMenu.classList.remove("hidden");
+    });
+
+    // Add functionality to save and load options from JSON
 });
