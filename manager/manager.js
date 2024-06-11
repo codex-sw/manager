@@ -43,6 +43,8 @@ const updateApplication = (latestCommit) => {
         execSync(`git clone https://github.com/codex-sw/manager.git ${tempDir}`);
         execSync(`sudo cp -r ${tempDir}/app/* /home/admin/tickerapp/app/`);
         fs.writeFileSync(localVersionFile, latestCommit);
+        // Navigate to the directory and install
+        execSync(`cd ${appDir} && npm install`);
         console.log('Update complete. Restarting application...');
         restartServices();
     } catch (error) {
