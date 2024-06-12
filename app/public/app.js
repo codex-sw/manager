@@ -18,16 +18,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 data: [], // Price data for the Y-axis
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1,
-                fill: false
+                fill: true,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Adjust color as needed
+                pointRadius: 0 // Hide the data points
             }]
         },
         options: {
             scales: {
                 x: {
-                    type: 'time',
-                    time: {
-                        unit: 'minute'
-                    }
+                    display: false // Hide the X-axis
+                },
+                y: {
+                    display: false // Hide the Y-axis
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false // Hide the legend
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0.4 // Smoothing the line
                 }
             }
         }
@@ -55,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ cryptoName })
             });
-    
+
             const data = await response.json();
             console.log('Received data:', data);
             if (data.id) {
@@ -65,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceElement.textContent = "$" + Number((data.price.replace(/[$,]/g, ''))).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 percentageChangeElement.textContent = data.percentageChange;
                 marketCapElement.textContent = formatMarketCap((data.marketCap.replace(/[$,]/g, '')));
-    
+
                 // Perform additional initial setup here
                 console.log(`Initial coin ID: ${data.id}`);
                 console.log(`Initial coin name: ${data.name}`);
@@ -73,36 +85,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`Initial price: ${data.price}`);
                 console.log(`Initial percentage change: ${data.percentageChange}`);
                 console.log(`Initial market cap: ${data.marketCap}`);
-    
+
                 // Update the chart with the received data
                 const now = new Date();
                 cryptoChart.data.labels.push(now);
                 cryptoChart.data.datasets[0].data.push(parseFloat(data.price.replace(/[^0-9.-]+/g,"")));
                 cryptoChart.update();
-    
+
                 if (data.percentageDataChange == "down") {
                     // Negative number, downwards triangle
                     if (triangleElement.classList.contains("triangle-positive")) {
                         triangleElement.classList.remove("triangle-positive");
                     }
-    
+
                     triangleElement.classList.add("triangle-negative");
                     percentageChangeElement.textContent = "-" + percentageChangeElement.textContent;
+
+                    // Change chart color to red
+                    cryptoChart.data.datasets[0].borderColor = 'rgba(255, 99, 132, 1)';
+                    cryptoChart.data.datasets[0].backgroundColor = 'rgba(255, 99, 132, 0.2)';
                 } else {
                     // Positive number, upwards triangle
                     if (triangleElement.classList.contains("triangle-negative")) {
                         triangleElement.classList.remove("triangle-negative");
                     }
-    
+
                     triangleElement.classList.add("triangle-positive");
+
+                    // Change chart color to green
+                    cryptoChart.data.datasets[0].borderColor = 'rgba(75, 192, 192, 1)';
+                    cryptoChart.data.datasets[0].backgroundColor = 'rgba(75, 192, 192, 0.2)';
                 }
+                cryptoChart.update();
             } else {
                 console.error('Error fetching crypto info');
             }
         } catch (error) {
             console.error('Error fetching crypto info:', error);
         }
-    }    
+    }
 
     fetchCryptoInfo(cryptoName);
 
@@ -130,6 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             triangleElement.classList.add("triangle-negative");
+
+            // Change chart color to red
+            cryptoChart.data.datasets[0].borderColor = 'rgba(255, 99, 132, 1)';
+            cryptoChart.data.datasets[0].backgroundColor = 'rgba(255, 99, 132, 0.2)';
         } else {
             // Positive number, upwards triangle
             if (triangleElement.classList.contains("triangle-negative")) {
@@ -137,7 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             triangleElement.classList.add("triangle-positive");
+
+            // Change chart color to green
+            cryptoChart.data.datasets[0].borderColor = 'rgba(75, 192, 192, 1)';
+            cryptoChart.data.datasets[0].backgroundColor = 'rgba(75, 192, 192, 0.2)';
         }
+        cryptoChart.update();
     };
 
     // Optionally, refresh the data at intervals
