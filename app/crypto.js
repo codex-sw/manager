@@ -11,44 +11,80 @@ async function fetchCoinId(cryptoName) {
     try {
         const response = await axios.get(url);
         const html = response.data;
-
         // Parse the HTML using JSDOM
         const dom = new JSDOM(html);
         const document = dom.window.document;
 
-        // Find the elements with the specified data-roles
         const coinNameElement = document.querySelector('[data-role="coin-name"]');
         const coinSymbolElement = document.querySelector('[data-role="coin-symbol"]');
+        const priceElement = document.querySelector('.sc-d1ede7e3-0.fsQm.base-text');
+        const percentageElement = document.querySelector('.sc-71024e3-0.ihXFUo.iPawMI');
+        const marketCapElement = document.querySelector('dd.sc-d1ede7e3-0.hPHvUM.base-text');
 
-        if (coinNameElement && coinSymbolElement) {
-            const coinName = coinNameElement.getAttribute('title');
-            const coinSymbol = coinSymbolElement.textContent.trim();
+        const result = {};
 
-            // Find all elements with the specified class to get the coin ID
-            const chipElements = document.querySelectorAll('div.BaseChip_labelWrapper__lZ4ii');
+        if (coinNameElement) {
+            result.name = coinNameElement.getAttribute('title');
+        } else {
+            console.warn('Coin name not found');
+        }
 
-            if (chipElements.length > 0) {
-                let idValue = null;
-                chipElements.forEach(function(chipElement) {
-                    // Extract the ID text (the text content of the div before the svg element)
-                    const idText = chipElement.textContent.trim();
-                    const potentialId = idText.split(/\s+/)[0]; // Assuming the ID is the first part
-                    if (!isNaN(potentialId)) {
-                        idValue = potentialId;
-                    }
-                });
+        if (coinSymbolElement) {
+            result.symbol = coinSymbolElement.textContent.trim();
+        } else {
+            console.warn('Coin symbol not found');
+        }
 
-                if (idValue) {
-                    return { id: idValue, name: coinName, symbol: coinSymbol };
-                } else {
-                    throw new Error('Coin ID not found');
-                }
+        if (priceElement) {
+            result.coinPrice = priceElement.textContent.trim();
+        } else {
+            console.warn('Price not found');
+        }
+
+        // if (percentageElement) {
+        //     result.percentageChange = percentageElement.textContent.trim();
+        //     result.percentageDataChange = percentageElement.getAttribute('data-change');
+        // } else {
+        //     console.warn('Percentage change not found');
+        // }
+
+        if (marketCapElement) {
+            const marketCapDiv = marketCapElement.querySelector('div.sc-4c05d6ef-0.sc-58c82cf9-0.dlQYLv.dTczEt');
+            if (marketCapDiv) {
+                result.coinMarketCap = marketCapDiv.nextSibling.textContent.trim();
+                result.percentageChange = marketCapDiv.querySelector('p').textContent.trim();
+                result.percentageDataChange = marketCapDiv.querySelector('p').getAttribute('data-change');
             } else {
-                throw new Error('Chip label wrapper not found');
+                console.warn('Market cap div not found');
+            }
+        }
+
+        const chipElements = document.querySelectorAll('div.BaseChip_labelWrapper__lZ4ii');
+
+        if (chipElements.length > 0) {
+            let idValue = null;
+            chipElements.forEach(function(chipElement) {
+                const idText = chipElement.textContent.trim();
+                const potentialId = idText.split(/\s+/)[0]; // Assuming the ID is the first part
+                if (!isNaN(potentialId)) {
+                    idValue = potentialId;
+                }
+            });
+
+            if (idValue) {
+                result.id = idValue;
+            } else {
+                console.warn('Coin ID not found');
             }
         } else {
-            throw new Error('Coin name or symbol not found');
+            console.warn('Chip label wrapper not found');
         }
+
+        if (!result.id) {
+            throw new Error('Coin ID not found');
+        }
+
+        return result;
     } catch (error) {
         console.error('Error fetching coin ID:', error);
         throw error;
@@ -122,11 +158,8 @@ router.post('/api/crypto-info', async (req, res) => {
     const { cryptoName } = req.body;
     try {
         console.log(`Received request for crypto: ${cryptoName}`);
-        const { id: coinId, name: coinName, symbol: coinSymbol } = await fetchCoinId(cryptoName);
-        const cryptoData = await new Promise((resolve) => {
-            fetchCryptoData(coinId, resolve);
-        });
-        res.json({ ...cryptoData, name: coinName, symbol: coinSymbol });
+        const { id: coinId, name: coinName, symbol: coinSymbol, coinPrice, coinMarketCap, percentageChange, percentageDataChange } = await fetchCoinId(cryptoName);
+        res.json({ id: coinId, name: coinName, symbol: coinSymbol, price: coinPrice, marketCap: coinMarketCap, percentageChange, percentageDataChange });
     } catch (error) {
         console.error('Error in /api/crypto-info:', error);
         res.status(500).json({ error: 'Internal Server Error' });

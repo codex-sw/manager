@@ -55,37 +55,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ cryptoName })
             });
-
+    
             const data = await response.json();
             console.log('Received data:', data);
-            console.log("NEW DATA!!!!")
-            console.log(data);
             if (data.id) {
+                // Set initial data
                 symbolElement.textContent = data.symbol;
                 companyNameElement.textContent = data.name;
-                priceElement.textContent = "$" + Number(data.price.toFixed(2)).toLocaleString();
-                percentageChangeElement.textContent = `${data.percentageChange.toFixed(2)}%`;
-                marketCapElement.textContent = formatMarketCap(data.marketCap);
-
+                priceElement.textContent = "$" + Number((data.price.replace(/[$,]/g, ''))).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                percentageChangeElement.textContent = data.percentageChange;
+                marketCapElement.textContent = formatMarketCap((data.marketCap.replace(/[$,]/g, '')));
+    
+                // Perform additional initial setup here
+                console.log(`Initial coin ID: ${data.id}`);
+                console.log(`Initial coin name: ${data.name}`);
+                console.log(`Initial coin symbol: ${data.symbol}`);
+                console.log(`Initial price: ${data.price}`);
+                console.log(`Initial percentage change: ${data.percentageChange}`);
+                console.log(`Initial market cap: ${data.marketCap}`);
+    
                 // Update the chart with the received data
                 const now = new Date();
                 cryptoChart.data.labels.push(now);
-                cryptoChart.data.datasets[0].data.push(data.price);
+                cryptoChart.data.datasets[0].data.push(parseFloat(data.price.replace(/[^0-9.-]+/g,"")));
                 cryptoChart.update();
-
-                if (data.percentageChange < 0) {
+    
+                if (data.percentageDataChange == "down") {
                     // Negative number, downwards triangle
                     if (triangleElement.classList.contains("triangle-positive")) {
                         triangleElement.classList.remove("triangle-positive");
                     }
-
+    
                     triangleElement.classList.add("triangle-negative");
+                    percentageChangeElement.textContent = "-" + percentageChangeElement.textContent;
                 } else {
                     // Positive number, upwards triangle
                     if (triangleElement.classList.contains("triangle-negative")) {
                         triangleElement.classList.remove("triangle-negative");
                     }
-
+    
                     triangleElement.classList.add("triangle-positive");
                 }
             } else {
@@ -94,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error fetching crypto info:', error);
         }
-    }
+    }    
 
     fetchCryptoInfo(cryptoName);
 
@@ -111,9 +119,25 @@ document.addEventListener('DOMContentLoaded', () => {
         cryptoChart.update();
 
         // Update the displayed values
-        priceElement.textContent = "$" + Number(data.price.toFixed(2)).toLocaleString();
+        priceElement.textContent = "$" + Number(data.price).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         percentageChangeElement.textContent = `${data.percentageChange.toFixed(2)}%`;
         marketCapElement.textContent = formatMarketCap(data.marketCap);
+
+        if (data.percentageChange < 0) {
+            // Negative number, downwards triangle
+            if (triangleElement.classList.contains("triangle-positive")) {
+                triangleElement.classList.remove("triangle-positive");
+            }
+
+            triangleElement.classList.add("triangle-negative");
+        } else {
+            // Positive number, upwards triangle
+            if (triangleElement.classList.contains("triangle-negative")) {
+                triangleElement.classList.remove("triangle-negative");
+            }
+
+            triangleElement.classList.add("triangle-positive");
+        }
     };
 
     // Optionally, refresh the data at intervals
